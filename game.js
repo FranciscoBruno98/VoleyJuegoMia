@@ -8,15 +8,15 @@
   // Z: 0 (far baseline, CPU team) .. 2 (near baseline, my team), net at Z=1
   // Y: height above ground (0 = ground), grows upward
   const NET_Z = 1;
-  const COURT_X_MIN = -0.68;
-  const COURT_X_MAX = 0.68;
+  const COURT_X_MIN = -0.92;
+  const COURT_X_MAX = 0.92;
   const MY_BASELINE_Z = 1.95;
   const CPU_BASELINE_Z = 0.05;
   const NET_HEIGHT = 0.26;
   const GRAVITY = 1.2;
   const JUMP_VY = 0.62;
-  const COLLISION_RADIUS = 0.075;
-  const BALL_RADIUS = 0.032;
+  const COLLISION_RADIUS = 0.058;
+  const BALL_RADIUS = 0.026;
   const REACH_HEIGHT = 0.20;
   const MAX_TOUCHES = 3;
 
@@ -109,7 +109,7 @@
     proj = {
       horizonY: H * 0.24,
       baseY: H - Math.max(16, H * 0.045),
-      widthHalfPx: W * 0.335,
+      widthHalfPx: W * 0.455,
       heightPxPerUnit: H * 0.62,
       farScale: 0.42,
     };
@@ -146,12 +146,12 @@
     const frontZ = isMy ? 1.30 : 0.70;
     const backZ = isMy ? 1.80 : 0.20;
     const slots = [
-      { x: -0.46, z: frontZ },
-      { x: 0.03, z: frontZ - 0.03 },
-      { x: 0.48, z: frontZ },
-      { x: -0.56, z: backZ },
-      { x: -0.04, z: backZ + 0.04 },
-      { x: 0.54, z: backZ },
+      { x: -0.62, z: frontZ },
+      { x: 0.04, z: frontZ - 0.03 },
+      { x: 0.64, z: frontZ },
+      { x: -0.75, z: backZ },
+      { x: -0.05, z: backZ + 0.04 },
+      { x: 0.72, z: backZ },
     ];
     return slots.map((s, i) => ({
       id: teamKey + i,
