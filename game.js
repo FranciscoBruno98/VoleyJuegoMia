@@ -77,7 +77,7 @@
 
   function computeMetrics() {
     const groundY = H - Math.max(18, H * 0.05);
-    const netHeight = H * 0.34;
+    const netHeight = H * 0.24;
     const playerRadius = Math.max(20, Math.min(46, Math.min(W, H) * 0.05));
     const ballRadius = playerRadius * 0.55;
     const leftBound = W * 0.04;
@@ -230,7 +230,7 @@
   // ---------------------------------------------------------------
   // Physics
   // ---------------------------------------------------------------
-  const MAX_BALL_SPEED_FACTOR = 1.55; // multiplied by H
+  const MAX_BALL_SPEED_FACTOR = 1.95; // multiplied by H
 
   function updatePlayer(dt) {
     player.vy += metrics.gravity * dt;
@@ -423,16 +423,16 @@
   }
 
   function hitAsPlayer(nx, ny, entity) {
-    const HIT_POWER = H * 0.95;
-    let vx = nx * HIT_POWER + player.vx * 0.4;
+    const HIT_POWER = H * 1.35;
+    let vx = nx * HIT_POWER + player.vx * 0.55;
     let vy = ny * HIT_POWER;
 
     // ensure a satisfying upward arc
-    const minUp = -H * 0.55;
+    const minUp = -H * 0.6;
     if (vy > minUp) vy = minUp * 0.6 + vy * 0.4;
 
     // incorporate lateral drag movement for aiming
-    vx += (moveVelocityHint()) * 0.5;
+    vx += (moveVelocityHint()) * 0.6;
 
     // tiny nudge so a perfectly still, dead-center hit never repeats
     // into an endless straight-up-and-down bounce
