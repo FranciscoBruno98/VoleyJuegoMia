@@ -1,4 +1,4 @@
-const CACHE_NAME = 'voley-playa-v1';
+const CACHE_NAME = 'voley-playa-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -25,18 +25,18 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Network-first: always try to fetch the latest version when online, so a
+// new deploy shows up immediately instead of being stuck on whatever was
+// cached the first time. Cache is only a fallback for offline play.
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          return response;
-        })
-        .catch(() => caches.match('./index.html'));
-    })
+    fetch(event.request)
+      .then((response) => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        return response;
+      })
+      .catch(() => caches.match(event.request).then((cached) => cached || caches.match('./index.html')))
   );
 });
