@@ -8,8 +8,8 @@
   // Z: 0 (far baseline, CPU team) .. 2 (near baseline, my team), net at Z=1
   // Y: height above ground (0 = ground), grows upward
   const NET_Z = 1;
-  const COURT_X_MIN = -0.48;
-  const COURT_X_MAX = 0.48;
+  const COURT_X_MIN = -0.68;
+  const COURT_X_MAX = 0.68;
   const MY_BASELINE_Z = 1.95;
   const CPU_BASELINE_Z = 0.05;
   const NET_HEIGHT = 0.26;
@@ -109,7 +109,7 @@
     proj = {
       horizonY: H * 0.24,
       baseY: H - Math.max(16, H * 0.045),
-      widthHalfPx: W * 0.40,
+      widthHalfPx: W * 0.335,
       heightPxPerUnit: H * 0.62,
       farScale: 0.42,
     };
@@ -146,12 +146,12 @@
     const frontZ = isMy ? 1.30 : 0.70;
     const backZ = isMy ? 1.80 : 0.20;
     const slots = [
-      { x: -0.30, z: frontZ },
-      { x: 0.00, z: frontZ },
-      { x: 0.30, z: frontZ },
-      { x: -0.30, z: backZ },
-      { x: 0.00, z: backZ },
-      { x: 0.30, z: backZ },
+      { x: -0.46, z: frontZ },
+      { x: 0.03, z: frontZ - 0.03 },
+      { x: 0.48, z: frontZ },
+      { x: -0.56, z: backZ },
+      { x: -0.04, z: backZ + 0.04 },
+      { x: 0.54, z: backZ },
     ];
     return slots.map((s, i) => ({
       id: teamKey + i,
@@ -536,10 +536,13 @@
     rally.touches[team] += 1;
     const touchNumber = rally.touches[team];
 
-    if (c.isPlayer) {
+    if (touchNumber < MAX_TOUCHES) {
+      // touches 1 (reception) and 2 (set) always stay on our own side -
+      // every team must use its full bump-set-spike sequence before the
+      // ball can cross back over the net, human player included.
+      hitPass(c, team, touchNumber, dx, dz, horizDist);
+    } else if (c.isPlayer) {
       hitAsPlayer(c, dx, dz, horizDist);
-    } else if (touchNumber < MAX_TOUCHES) {
-      hitAsAiPass(c, team, touchNumber);
     } else {
       hitAsAiAttack(c, team);
     }
@@ -568,17 +571,24 @@
     ball.vx = vx; ball.vy = vy; ball.vz = vz;
   }
 
-  function hitAsAiPass(c, team, touchNumber) {
-    // touch 1 (reception) or touch 2 (set) - keep the ball on our own side
-    const diff = team === 'my' ? TEAMMATE_AI : DIFFICULTY[difficulty];
+  function hitPass(c, team, touchNumber, dx, dz, horizDist) {
+    // touch 1 (reception) or touch 2 (set) - keep the ball on our own side.
+    // Works for both AI teammates/opponents and the human player.
     const nearNetZ = team === 'my' ? NET_Z + 0.20 : NET_Z - 0.20;
-    const targetX = clamp((touchNumber === 1 ? c.x : (Math.random() * 2 - 1) * 0.30), COURT_X_MIN + 0.1, COURT_X_MAX - 0.1);
+    let targetX;
+    if (c.isPlayer) {
+      // let the player steer the pass a little via contact angle + movement
+      const nx = dx / horizDist;
+      targetX = c.x + nx * 0.22 + (playerChar.vx || 0) * 0.15;
+    } else {
+      targetX = touchNumber === 1 ? c.x : (Math.random() * 2 - 1) * 0.45;
+    }
+    targetX = clamp(targetX, COURT_X_MIN + 0.12, COURT_X_MAX - 0.12);
     const targetZ = nearNetZ;
     const flightTime = 0.45 + Math.random() * 0.2;
 
     const { vx, vy, vz } = solveShot(ball.x, ball.y, ball.z, targetX, 0, targetZ, flightTime, 0.30);
     ball.vx = vx; ball.vy = vy; ball.vz = vz;
-    void diff;
   }
 
   function hitAsAiAttack(c, team) {
@@ -743,38 +753,75 @@
     ctx.fillRect(xR, yTop - 8, postW, y0 - yTop + 8);
   }
 
+  const LIMB_COLOR = '#3a4652';
+
   function drawCharacter(c) {
     const s = scaleAtZ(c.z);
-    const r = COLLISION_RADIUS * proj.heightPxPerUnit * s;
+    const r = COLLISION_RADIUS * proj.heightPxPerUnit * s; // head radius
     const cx = screenX(c.x, c.z);
     const groundY = groundScreenY(c.z);
-    const cy = groundY - c.y * proj.heightPxPerUnit * s - r;
+    const feetY = groundY - c.y * proj.heightPxPerUnit * s;
 
     const teamColors = TEAM_COLORS[c.team];
 
-    // shadow
+    const legLen = r * 1.55;
+    const torsoLen = r * 1.5;
+    const torsoW = r * 1.05;
+    const hipY = feetY - legLen;
+    const shoulderY = hipY - torsoLen;
+    const headCY = shoulderY - r * 0.92;
+
+    // shadow (always at true ground contact point, not the airborne feet)
     ctx.beginPath();
     ctx.fillStyle = 'rgba(0,0,0,0.18)';
-    ctx.ellipse(cx, groundY + r * 0.15, r * 0.9, r * 0.3, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, groundY + r * 0.12, r * 0.95, r * 0.3, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // body
+    ctx.lineCap = 'round';
+
+    // legs
+    ctx.strokeStyle = LIMB_COLOR;
+    ctx.lineWidth = Math.max(1.8, r * 0.32);
     ctx.beginPath();
-    ctx.fillStyle = teamColors.dark;
-    ctx.roundRect(cx - r * 0.55, cy - r * 0.1, r * 1.1, r * 1.3, r * 0.3);
+    ctx.moveTo(cx - r * 0.30, hipY + r * 0.1);
+    ctx.lineTo(cx - r * 0.32, feetY);
+    ctx.moveTo(cx + r * 0.30, hipY + r * 0.1);
+    ctx.lineTo(cx + r * 0.32, feetY);
+    ctx.stroke();
+
+    // arms
+    ctx.strokeStyle = teamColors.dark;
+    ctx.lineWidth = Math.max(1.4, r * 0.24);
+    ctx.beginPath();
+    ctx.moveTo(cx - torsoW * 0.48, shoulderY + torsoLen * 0.1);
+    ctx.lineTo(cx - torsoW * 0.9, shoulderY + torsoLen * 0.58);
+    ctx.moveTo(cx + torsoW * 0.48, shoulderY + torsoLen * 0.1);
+    ctx.lineTo(cx + torsoW * 0.9, shoulderY + torsoLen * 0.58);
+    ctx.stroke();
+
+    // shorts
+    ctx.beginPath();
+    ctx.fillStyle = LIMB_COLOR;
+    ctx.roundRect(cx - torsoW * 0.5, hipY - torsoLen * 0.22, torsoW, torsoLen * 0.4, r * 0.16);
+    ctx.fill();
+
+    // jersey (torso)
+    ctx.beginPath();
+    ctx.fillStyle = teamColors.color;
+    ctx.roundRect(cx - torsoW / 2, shoulderY, torsoW, torsoLen * 0.82, r * 0.22);
     ctx.fill();
 
     // head
     ctx.beginPath();
-    ctx.fillStyle = teamColors.color;
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = teamColors.dark;
+    ctx.arc(cx, headCY, r, 0, Math.PI * 2);
     ctx.fill();
 
     if (c.isPlayer) {
       ctx.beginPath();
       ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = Math.max(1.5, r * 0.14);
-      ctx.arc(cx, cy, r * 1.25, 0, Math.PI * 2);
+      ctx.lineWidth = Math.max(1.5, r * 0.16);
+      ctx.arc(cx, headCY, r * 1.3, 0, Math.PI * 2);
       ctx.stroke();
 
       // marker below the controlled player
