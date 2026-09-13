@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0e3a5c">
+<meta name="description" content="Vóley Playa - juego de voleibol para celular contra una IA">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vóley Playa">
+<title>Vóley Playa</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Pantalla de inicio -->
+  <div id="menuScreen" class="screen">
+    <h1 class="title">🏐 Vóley Playa</h1>
+    <p class="subtitle">Jugá contra la CPU</p>
+
+    <div class="menu-block">
+      <div class="menu-label">Dificultad</div>
+      <div class="difficulty-row">
+        <button class="diff-btn" data-diff="facil">Fácil</button>
+        <button class="diff-btn selected" data-diff="normal">Normal</button>
+        <button class="diff-btn" data-diff="dificil">Difícil</button>
+      </div>
+    </div>
+
+    <div class="menu-block">
+      <div class="menu-label">Puntos para ganar</div>
+      <div class="difficulty-row">
+        <button class="pts-btn" data-pts="7">7</button>
+        <button class="pts-btn selected" data-pts="11">11</button>
+        <button class="pts-btn" data-pts="15">15</button>
+      </div>
+    </div>
+
+    <button id="playBtn" class="play-btn">JUGAR</button>
+    <button id="installBtn" class="install-btn" hidden>⬇ Instalar en el celu</button>
+    <p class="hint">Movete arrastrando el dedo en tu mitad de la cancha.<br>Tocá el botón SALTAR para saltar y rematar.</p>
+    <p class="rotate-hint" id="rotateHint">Girá el celular en horizontal para jugar mejor 🔄</p>
+  </div>
+
+  <!-- Pantalla de juego -->
+  <div id="gameScreen" class="screen" hidden>
+    <div id="hud">
+      <div class="score-box">
+        <span class="score-label">VOS</span>
+        <span id="scoreLeft" class="score-value">0</span>
+      </div>
+      <button id="pauseBtn" class="pause-btn">❚❚</button>
+      <div class="score-box">
+        <span id="scoreRight" class="score-value">0</span>
+        <span class="score-label">CPU</span>
+      </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="touchLayer">
+      <div id="moveZone" class="control-zone"></div>
+      <div id="jumpZone" class="control-zone">
+        <button id="jumpBtn">SALTAR</button>
+      </div>
+    </div>
+
+    <div id="pointBanner" class="banner" hidden></div>
+  </div>
+
+  <!-- Pantalla de pausa -->
+  <div id="pauseScreen" class="screen overlay" hidden>
+    <h2>Pausa</h2>
+    <button id="resumeBtn" class="play-btn">Continuar</button>
+    <button id="menuFromPauseBtn" class="secondary-btn">Menú principal</button>
+  </div>
+
+  <!-- Pantalla de fin de partido -->
+  <div id="endScreen" class="screen overlay" hidden>
+    <h2 id="endTitle">¡Ganaste!</h2>
+    <p id="endScore" class="end-score">11 - 7</p>
+    <button id="rematchBtn" class="play-btn">Revancha</button>
+    <button id="menuFromEndBtn" class="secondary-btn">Menú principal</button>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
