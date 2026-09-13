@@ -216,6 +216,45 @@ html, body {
   font-weight: 800;
 }
 
+.hud-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.touch-counter {
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,0,0,0.35);
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+.touch-counter-label {
+  font-size: 9px;
+  opacity: 0.75;
+  letter-spacing: 0.05em;
+}
+
+.touch-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.touch-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+}
+
+.touch-dot.filled {
+  background: #ffb703;
+}
+
 .pause-btn {
   pointer-events: all;
   width: 40px;

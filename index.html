@@ -21,7 +21,7 @@
   <!-- Pantalla de inicio -->
   <div id="menuScreen" class="screen">
     <h1 class="title">🏐 Vóley Playa</h1>
-    <p class="subtitle">Jugá contra la CPU</p>
+    <p class="subtitle">6 vs 6 · Jugá contra la CPU</p>
 
     <div class="menu-block">
       <div class="menu-label">Dificultad</div>
@@ -43,7 +43,7 @@
 
     <button id="playBtn" class="play-btn">JUGAR</button>
     <button id="installBtn" class="install-btn" hidden>⬇ Instalar en el celu</button>
-    <p class="hint">Movete arrastrando el dedo en tu mitad de la cancha.<br>Tocá el botón SALTAR para saltar y rematar.</p>
+    <p class="hint">Sos el jugador celeste con el círculo debajo. Arrastrá el dedo para moverte (adelante/atrás y a los costados). Tocá SALTAR para saltar y rematar.<br>Máximo 3 toques por equipo antes de pasar la pelota.</p>
     <p class="rotate-hint" id="rotateHint">Girá el celular en horizontal para jugar mejor 🔄</p>
   </div>
 
@@ -54,7 +54,17 @@
         <span class="score-label">VOS</span>
         <span id="scoreLeft" class="score-value">0</span>
       </div>
-      <button id="pauseBtn" class="pause-btn">❚❚</button>
+      <div class="hud-center">
+        <button id="pauseBtn" class="pause-btn">❚❚</button>
+        <div id="touchCounter" class="touch-counter" hidden>
+          <span class="touch-counter-label">TOQUES</span>
+          <span class="touch-dots">
+            <span class="touch-dot" data-i="1"></span>
+            <span class="touch-dot" data-i="2"></span>
+            <span class="touch-dot" data-i="3"></span>
+          </span>
+        </div>
+      </div>
       <div class="score-box">
         <span id="scoreRight" class="score-value">0</span>
         <span class="score-label">CPU</span>
